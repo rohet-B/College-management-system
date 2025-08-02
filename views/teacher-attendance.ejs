@@ -39,19 +39,14 @@
   <div class="container mt-5">
     <h2 class="mb-4 text-center">📋 Attendance Register</h2>
 
-    <!-- Subject Selector -->
+    <!-- Subject Selector (from teacher's assigned subjects) -->
     <div class="mb-4">
       <label for="subjectSelector" class="form-label">Select Subject:</label>
       <select id="subjectSelector" class="form-select">
         <option disabled selected>Select a subject</option>
-        <% 
-          let subjectsSet = new Set(); 
-          students.forEach(s => {
-            s.subjects_with_assessments.forEach(subj => subjectsSet.add(subj.subject));
-          });
-          [...subjectsSet].forEach(subject => { %>
-            <option value="<%= subject %>"><%= subject %></option>
-        <% }); %>
+        <% teacher.subjects_assigned.forEach(sub => { %>
+          <option value="<%= sub.name %>"><%= sub.name %></option>
+        <% }) %>
       </select>
     </div>
 
@@ -75,65 +70,77 @@
         </table>
       </div>
 
-      <!-- Button Row -->
       <div class="text-center mt-4 d-flex justify-content-center gap-3">
         <a href="/teacher/dashboard/<%= teacherID %>" class="btn btn-secondary px-4 py-2">Back to Dashboard</a>
-        <button type="submit" class="btn btn-primary px-4 py-2">Save Attendance</button>
+        <button type="submit" class="btn btn-primary px-4 py-2" id="saveBtn" disabled>Save Attendance</button>
       </div>
     </form>
   </div>
 
-  <!-- Hidden serialized students data -->
+  <!-- Hidden serialized students and teacher data -->
   <div id="studentsData" data-students='<%= JSON.stringify(students).replace(/'/g, "&apos;") %>' hidden></div>
+  <div id="teacherData" data-teacher='<%= JSON.stringify(teacher).replace(/'/g, "&apos;") %>' hidden></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const studentsData = document.getElementById("studentsData").dataset.students.replace(/&apos;/g, "'");
-      const students = JSON.parse(studentsData);
-
-      const attendanceBody = document.getElementById('attendanceBody');
+      const studentsData = JSON.parse(document.getElementById("studentsData").dataset.students.replace(/&apos;/g, "'"));
       const subjectSelector = document.getElementById('subjectSelector');
+      const attendanceBody = document.getElementById('attendanceBody');
       const subjectHidden = document.getElementById('selectedSubjectHidden');
+      const saveBtn = document.getElementById('saveBtn');
+      const heading = document.querySelector('h2');
 
       subjectSelector.addEventListener('change', () => {
         const selectedSubject = subjectSelector.value;
         subjectHidden.value = selectedSubject;
         attendanceBody.innerHTML = '';
+        heading.textContent = `📋 Attendance Register - ${selectedSubject}`;
+        saveBtn.disabled = false;
 
-        students.forEach(student => {
+        let found = false;
+
+        studentsData.forEach(student => {
           const subjectData = student.subjects_with_assessments.find(s => s.subject === selectedSubject);
           if (subjectData) {
-            const row = document.createElement('tr');
+            found = true;
             const sid = student.studentID;
+            const row = document.createElement('tr');
 
             row.innerHTML = `
               <td>${student.Full_name}</td>
               <td>${sid}</td>
               <td><span class="badge-subject">${selectedSubject}</span></td>
-              ${['present', 'absent', 'holiday'].map(type => `
-                <td>
-                  <div class="attendance-col">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="update('${sid}', '${selectedSubject}', '${type}', -1)">
-                      <i class="bi bi-caret-left-fill"></i>
-                    </button>
-                    <div id="${sid}-${selectedSubject}-${type}" class="count-circle">${subjectData.attendance[type]}</div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="update('${sid}', '${selectedSubject}', '${type}', 1)">
-                      <i class="bi bi-caret-right-fill"></i>
-                    </button>
-                  </div>
-                  <input type="hidden" name="attendance[${sid}][${type}]" id="input-${sid}-${type}" value="${subjectData.attendance[type]}">
-                </td>
-              `).join('')}
+              ${['present', 'absent', 'holiday'].map(type => {
+                const value = subjectData.attendance[type] || 0;
+                return `
+                  <td>
+                    <div class="attendance-col">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="update('${sid}', '${selectedSubject}', '${type}', -1)">
+                        <i class="bi bi-caret-left-fill"></i>
+                      </button>
+                      <div id="${sid}-${selectedSubject}-${type}" class="count-circle">${value}</div>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="update('${sid}', '${selectedSubject}', '${type}', 1)">
+                        <i class="bi bi-caret-right-fill"></i>
+                      </button>
+                    </div>
+                    <input type="hidden" name="attendance[${sid}][${type}]" id="input-${sid}-${selectedSubject}-${type}" value="${value}">
+                  </td>
+                `;
+              }).join('')}
             `;
             attendanceBody.appendChild(row);
           }
         });
+
+        if (!found) {
+          attendanceBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No students found for this subject.</td></tr>`;
+        }
       });
     });
 
     function update(studentID, subject, type, change) {
       const display = document.getElementById(`${studentID}-${subject}-${type}`);
-      const input = document.getElementById(`input-${studentID}-${type}`);
+      const input = document.getElementById(`input-${studentID}-${subject}-${type}`);
       let current = parseInt(display.textContent);
       let newValue = current + change;
       if (newValue >= 0) {
@@ -142,6 +149,5 @@
       }
     }
   </script>
-
 </body>
 </html>

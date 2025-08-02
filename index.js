@@ -292,7 +292,7 @@ let students = [
         attendance: { present: 44, absent: 4, holiday: 6 }
       },
       {
-        subject: "SOFT ENGINEERING",
+        subject: "SOFTWARE ENGINEERING",
         assessments: [
           { type: "PPT Marks", marks: 9 },
           { type: "ASSIGNMENTS 1", marks: 8 },
@@ -308,7 +308,7 @@ let students = [
         attendance: { present: 42, absent: 6, holiday: 6 }
       },
       {
-        subject: "INTRO TO MNGMNT & ENTRE DEV",
+        subject: "INTRO TO MNGMNT & ENTRE DEVELOPMENT",
         assessments: [
           { type: "PPT Marks", marks: 8 },
           { type: "ASSIGNMENTS 1", marks: 9 },
@@ -340,7 +340,7 @@ let students = [
         attendance: { present: 41, absent: 8, holiday: 5 }
       },
       {
-        subject: "Digital Marketing",
+        subject: "DIGITAL MARKETING",
         assessments: [
           { type: "PPT Marks", marks: 9 },
           { type: "ASSIGNMENTS 1", marks: 10 },
@@ -386,7 +386,7 @@ let students = [
         attendance: { present: 45, absent: 4, holiday: 5 }
       },
       {
-        subject: "SOFT ENGINEERING",
+        subject: "SOFTWARE ENGINEERING",
         assessments: [
           { type: "PPT Marks", marks: 9 },
           { type: "ASSIGNMENTS 1", marks: 10 },
@@ -402,7 +402,7 @@ let students = [
         attendance: { present: 43, absent: 6, holiday: 5 }
       },
       {
-        subject: "INTRO TO MNGMNT & ENTRE DEV",
+        subject: "INTRO TO MNGMNT & ENTRE DEVELOPMENT",
         assessments: [
           { type: "PPT Marks", marks: 10 },
           { type: "ASSIGNMENTS 1", marks: 9 },
@@ -434,7 +434,7 @@ let students = [
         attendance: { present: 41, absent: 7, holiday: 7 }
       },
       {
-        subject: "Digital Marketing",
+        subject: "DIGITAL MARKETING",
         assessments: [
           { type: "PPT Marks", marks: 10 },
           { type: "ASSIGNMENTS 1", marks: 8 },
@@ -480,7 +480,7 @@ let students = [
         attendance: { present: 45, absent: 4, holiday: 5 }
       },
       {
-        subject: "SOFT ENGINEERING",
+        subject: "SOFTWARE ENGINEERING",
         assessments: [
           { type: "PPT Marks", marks: 10 },
           { type: "ASSIGNMENTS 1", marks: 10 },
@@ -496,7 +496,7 @@ let students = [
         attendance: { present: 44, absent: 5, holiday: 5 }
       },
       {
-        subject: "INTRO TO MNGMNT & ENTRE DEV",
+        subject: "INTRO TO MNGMNT & ENTRE DEVELOPMENT",
         assessments: [
           { type: "PPT Marks", marks: 10 },
           { type: "ASSIGNMENTS 1", marks: 9 },
@@ -528,7 +528,7 @@ let students = [
         attendance: { present: 43, absent: 6, holiday: 5 }
       },
       {
-        subject: "Digital Marketing",
+        subject: "DIGITAL MARKETING",
         assessments: [
           { type: "PPT Marks", marks: 9 },
           { type: "ASSIGNMENTS 1", marks: 10 },
@@ -673,14 +673,72 @@ app.get('/admin/students', (req, res) => {
         selectedSemester: semester || "All"
     });
 });
+// ----------------------------------------------------------------------------
+// We extract the numeric part from each student ID (removing the S).
+
+// Use Math.max() to find the highest ID assigned so far.
+
+// 100 is the fallback in case the array is empty (ensures next becomes S101).
+
+// This means: If last was S105, next will be S106.
+
 // Sub routes to manage students i.e Adding new student
-app.get('/admin/students/new',(req,res)=>{
-    res.render("student-new.ejs");
+let nextStudentNumber = Math.max(
+  ...students.map(s => parseInt(s.studentID.slice(1))), // Extract numeric part (e.g., 101)
+  100 // default fallback if no students exist
+);
+app.get('/admin/students/new', (req, res) => {
+  const nextID = `S${nextStudentNumber + 1}`;  // preview upcoming ID
+  res.render("student-new.ejs", { nextID });  // send it to form
 });
-app.post('/admin/students',(req,res)=>{
-    const newStudent = req.body;
-    students.push(newStudent);
-    sendMail(`${newStudent.gmail}`,"Welcome to the University!",
+// Default assessments
+const defaultAssessments = [
+  { type: "PPT Marks", marks: 0 },
+  { type: "ASSIGNMENTS 1", marks: 0 },
+  { type: "ASSIGNMENTS 2", marks: 0 },
+  { type: "ASSIGNMENTS 3", marks: 0 },
+  { type: "ASSIGNMENTS 4", marks: 0 },
+  { type: "Practice Test", marks: 0 },
+  { type: "Mock Exam", marks: 0 },
+  { type: "Internal Exam (Written)", marks: 0 },
+  { type: "Internal Exam (Viva)", marks: 0 },
+  { type: "External Exam", marks: 0 }
+];
+
+
+app.post('/admin/students', (req, res) => {
+  nextStudentNumber++;
+  const newStudentID = `S${nextStudentNumber}`;
+
+  const rawSubjects = req.body.subjects || [];
+
+  const subjects_with_assessments = rawSubjects.map(subject => ({
+    subject: subject.subject,
+    assessments: defaultAssessments.map(a => ({ ...a })),  // deep copy
+    attendance: {
+      present: parseInt(subject.attendance?.present || 0),
+      absent: parseInt(subject.attendance?.absent || 0),
+      holiday: parseInt(subject.attendance?.holiday || 0)
+    }
+  }));
+
+  const newStudent = {
+    studentID: newStudentID,
+    Full_name: req.body.Full_name,
+    gender: req.body.gender,
+    dob: req.body.dob,
+     user_name: req.body.user_name,          // <- add this
+  password: req.body.password,
+  Year: req.body.Year,                    // <- add this
+  semester: req.body.semester, 
+    gmail: req.body.gmail.toLowerCase(),
+    course: req.body.course.toUpperCase(),
+    subjects_with_assessments
+  };
+
+  students.push(newStudent);  // Assuming `students` is your main array
+
+  sendMail(`${newStudent.gmail}`,"Welcome to the University!",
          `
   <h2>🎉 Welcome to the University!</h2>
   <p>Dear ${newStudent.Full_name},</p>
@@ -714,7 +772,7 @@ app.post('/admin/students',(req,res)=>{
   <p>Best regards,<br><strong>University Admin Team</strong></p>
   `
     )
-    res.redirect('/admin/students');
+  res.redirect('/admin/students');
 });
 
 // ----------------------------------------------------------
@@ -796,17 +854,27 @@ app.get('/admin/teachers', (req, res) => {
         selectedCourse: course
     });
 });
+
 // Sub routes to manage teachers i.e Adding a new teacher
+    let nextTeacherNumber = Math.max(
+  ...teachers.map(t => parseInt(t.teacherID.slice(1))),
+  100 // Default fallback if no teachers yet
+);
 app.get('/admin/teachers/new',(req,res)=>{
-    res.render('teacher-new.ejs');
+    let nextTeacherID = `T${nextTeacherNumber + 1}`;
+
+    // Pass nextTeacherID to the form
+    res.render("teacher-new.ejs", { nextTeacherID });
 });
+
 app.post('/admin/teachers', (req, res) => {
+    nextTeacherNumber++; // Increase counter
+    const newTeacherID = `T${nextTeacherNumber}`;
     const {
         Full_name,
         username,
         password,
         gender,
-        teacherID,
         department,
         experience,
         dob,
@@ -815,26 +883,29 @@ app.post('/admin/teachers', (req, res) => {
         gmail
     } = req.body;
 
-    // Normalize subjects_assigned (it can be an object or array depending on how many fields were submitted)
     let subjects = [];
 
-    if (req.body.subjects_assigned) {
-        if (Array.isArray(req.body.subjects_assigned)) {
-            // If multiple subjects were added
-            subjects = req.body.subjects_assigned;
-        } else {
-            // If only one subject was added (it comes as an object, not array)
-            subjects.push(req.body.subjects_assigned);
+if (req.body.subjects_assigned) {
+    // req.body.subjects_assigned will be an object like:
+    // { '0': {name: '...', course: '...', semester: '...'}, ... }
+    if (typeof req.body.subjects_assigned === 'object') {
+        for (const key in req.body.subjects_assigned) {
+            const entry = req.body.subjects_assigned[key];
+            subjects.push({
+                name: entry.name,
+                course: entry.course,
+                semester: entry.semester
+            });
         }
     }
+}
 
-    // Construct the new teacher object
     const newTeacher = {
         Full_name,
         username,
         password,
         gender,
-        teacherID: teacherID.toUpperCase(), // enforce uppercase ID
+        teacherID: newTeacherID, 
         department,
         years_of_experience: Number(experience),
         dob,
@@ -844,7 +915,6 @@ app.post('/admin/teachers', (req, res) => {
         gmail
     };
 
-    // Push to teachers array
     teachers.push(newTeacher);
 
     sendMail(
@@ -879,10 +949,9 @@ app.post('/admin/teachers', (req, res) => {
         `
     );
 
-
-    // Redirect
     res.redirect('/admin/teachers');
 });
+
 
 // Editing an existing teacher ** NOW REMOVING IT TO TEACHER SINCE TEACHER CAN DO IT'S OWN CHANGES
 
@@ -1153,7 +1222,11 @@ app.post("/teacher/send/materials/:teacherID", upload.single('material'),(req,re
 
 app.get('/teacher/attendance/:teacherID',(req,res)=>{
     const teacherID = req.params.teacherID;
-    res.render('teacher-attendance.ejs',{ students ,teacherID });
+
+    const teacher = teachers.find(t => t.teacherID === teacherID);
+    const assignedSubjects = teacher ? teacher.subjects_assigned.map(sub => sub.name) : [];
+
+    res.render('teacher-attendance.ejs',{ teacher ,teacherID, assignedSubjects, students});
 });
 app.post('/teacher/attendance/save/:teacherID', (req, res) => {
   const { teacherID } = req.params;
