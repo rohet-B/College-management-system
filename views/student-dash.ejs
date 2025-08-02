@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .card {
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border: none;
+    }
+    .nav-tabs .nav-link.active {
+      background-color: #0d6efd;
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .tab-pane {
+      animation: fadein 0.2s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .section-title {
+      font-weight: 600;
+      border-bottom: 2px solid #0d6efd;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/logout">🎓 University System</a>
+    <div class="ms-auto">
+      <a href="/logout" class="btn btn-outline-danger">Logout</a>
+    </div>
+  </div>
+</nav>
+  <div class="container mt-5">
+    <div class="card p-4">
+      <h2 class="text-primary mb-3">Welcome, <%= student.Full_name %>!</h2>
+      <p class="text-muted">
+        Course: <strong><%= student.course %></strong> |
+        Year: <strong><%= student.Year %></strong> |
+        Semester: <strong><%= student.semester %></strong>
+      </p>
+
+      <!-- Nav Tabs -->
+      <ul class="nav nav-tabs mt-3" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-bs-toggle="tab" href="#marks">Marks</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#attendance">Attendance</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#profile">Edit Profile</a>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content bg-white p-4 mt-3 rounded border">
+
+        <!-- Marks Tab -->
+        <div id="marks" class="tab-pane fade show active">
+          <h4 class="section-title">Subject-wise Marks</h4>
+          <% if (student.subjects_with_assessments && student.subjects_with_assessments.length > 0) { %>
+            <% student.subjects_with_assessments.forEach(sub => { %>
+              <div class="mb-4">
+                <h5 class="text-secondary"><%= sub.subject %></h5>
+                <ul class="list-group">
+                  <% sub.assessments.forEach(a => { %>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span><%= a.type %></span>
+                      <span class="fw-bold"><%= a.marks %></span>
+                    </li>
+                  <% }) %>
+                </ul>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-muted">No marks data available.</p>
+          <% } %>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div id="attendance" class="tab-pane fade">
+          <h4 class="section-title">Attendance Summary</h4>
+          <% if (student.subjects_with_assessments && student.subjects_with_assessments.length > 0) { %>
+            <ul class="list-group">
+              <% student.subjects_with_assessments.forEach(sub => { %>
+                <li class="list-group-item d-flex justify-content-between">
+                  <strong><%= sub.subject %></strong>
+                  <span>
+                    Present: <span class="text-success fw-semibold"><%= sub.attendance.present %></span> |
+                    Absent: <span class="text-danger fw-semibold"><%= sub.attendance.absent %></span> |
+                    Holiday: <span class="text-warning fw-semibold"><%= sub.attendance.holiday %></span>
+                  </span>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">No attendance data available.</p>
+          <% } %>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-pane fade">
+          <h4 class="section-title">Edit Profile</h4>
+          <form method="POST" action="/student/update/<%= student.studentID %>?_method=PATCH">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="Full_name" class="form-control" value="<%= student.Full_name %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="user_name" class="form-control" value="<%= student.user_name %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" value="<%= student.password %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="gmail" class="form-control" value="<%= student.gmail %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" name="dob" class="form-control" value="<%= student.dob %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Gender</label>
+                <select name="gender" class="form-select">
+                  <option <%= student.gender === "Male" ? "selected" : "" %>>Male</option>
+                  <option <%= student.gender === "Female" ? "selected" : "" %>>Female</option>
+                  <option <%= student.gender === "Other" ? "selected" : "" %>>Other</option>
+                </select>
+              </div>
+
+              <!-- Added Course, Year, Semester -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Course</label>
+                <input type="text" name="course" class="form-control" value="<%= student.course %>">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Year</label>
+                <input type="number" name="Year" class="form-control" value="<%= student.Year %>" min="1">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Semester</label>
+                <input type="number" name="semester" class="form-control" value="<%= student.semester %>" min="1">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2" onclick="return confirmUpdate()">Update Profile</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function confirmUpdate() {
+      alert("✅ Information updated successfully! Please recheck your profile on the dashboard.");
+      return true;
+    }
+  </script>
+</body>
+</html>

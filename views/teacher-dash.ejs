@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .dashboard-box {
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 2rem;
+    }
+    .dashboard-header {
+      margin-bottom: 2rem;
+    }
+    .card {
+      transition: transform 0.2s ease;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar with Logout -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/logout">🎓 University System</a>
+    <div class="ms-auto">
+      <a href="/logout" class="btn btn-outline-danger">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Dashboard Content -->
+<div class="container mt-5">
+  <div class="dashboard-box bg-white">
+
+    <!-- Header -->
+    <div class="dashboard-header text-center">
+      <h2>Welcome <%= teacher_full_name %></h2>
+      <p class="text-muted">Teacher Dashboard Panel</p>
+    </div>
+
+    <!-- Subjects Assigned Section -->
+    <div class="mb-5">
+      <div class="card border-primary">
+        <div class="card-body">
+          <h5 class="card-title">Assigned Subjects & Courses</h5>
+          <ul class="list-group list-group-flush mt-3">
+            <% subjects.forEach(function(subj) { %>
+              <li class="list-group-item">
+                <strong><%= subj.name %></strong> — <em><%= subj.course %> (Sem <%= subj.semester %>)</em>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+<!-- Dashboard Cards -->
+<div class="row g-4">
+
+  <!-- Row 1 -->
+  <div class="col-md-6">
+    <div class="card border-success h-100">
+      <div class="card-body">
+        <h5 class="card-title text-center">👥 View Students</h5>
+        <p class="card-text text-center">Browse students based on assigned courses.</p>
+        <a href="/teacher/assigned-students/<%= teacherID %>/<%= subjects %>" class="btn btn-success w-100">Student List</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card border-warning h-100">
+      <div class="card-body">
+        <h5 class="card-title text-center">📤 Send Material</h5>
+        <p class="card-text text-center">Send PDF notes, PPTs or other resources to student emails.</p>
+        <a href="/teacher/send/materials/<%= teacherID %>" class="btn btn-warning w-100">Send</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="col-md-6">
+    <div class="card border-danger h-100">
+      <div class="card-body">
+        <h5 class="card-title text-center">✅ Mark Attendance</h5>
+        <p class="card-text text-center">Mark and review student attendance.</p>
+        <a href="/teacher/attendance/<%= teacherID %>" class="btn btn-danger w-100">Manage Attendance</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card border-dark h-100">
+      <div class="card-body">
+        <h5 class="card-title text-center">🔁 Profile Update</h5>
+        <p class="card-text text-center">Need to update your details or review your info?</p>
+        <a href="/teacher/dashboard/edit/<%= teacherID %>" class="btn btn-dark w-100">Edit profile</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
