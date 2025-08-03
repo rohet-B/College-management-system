@@ -104,7 +104,7 @@ let students = [
         attendance: { present: 42, absent: 7, holiday: 6 }
       },
       {
-        subject: "SOFT ENGINEERING",
+        subject: "SOFTWARE ENGINEERING",
         assessments: [
           { type: "PPT Marks", marks: 10 },
           { type: "ASSIGNMENTS 1", marks: 9 },
@@ -152,7 +152,7 @@ let students = [
         attendance: { present: 43, absent: 5, holiday: 7 }
       },
       {
-        subject: "Digital Marketing",
+        subject: "DIGITAL MARKETING",
         assessments: [
           { type: "PPT Marks", marks: 9 },
           { type: "ASSIGNMENTS 1", marks: 9 },
@@ -198,7 +198,7 @@ let students = [
         attendance: { present: 41, absent: 6, holiday: 7 }
       },
       {
-        subject: "SOFT ENGINEERING",
+        subject: "SOFTWARE ENGINEERING",
         assessments: [
           { type: "PPT Marks", marks: 8 },
           { type: "ASSIGNMENTS 1", marks: 8 },
@@ -246,7 +246,7 @@ let students = [
         attendance: { present: 42, absent: 7, holiday: 5 }
       },
       {
-        subject: "Digital Marketing",
+        subject: "DIGITAL MARKETING",
         assessments: [
           { type: "PPT Marks", marks: 10 },
           { type: "ASSIGNMENTS 1", marks: 9 },
