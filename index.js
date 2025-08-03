@@ -756,13 +756,11 @@ app.post('/admin/students', (req, res) => {
 
   <p>⚠️ Since the password was shared online, we recommend changing it once you have fully explored the student panel to avoid any potential vulnerabilities.</p>
 
-    <p><strong>Login Here:</strong> <a href="http://localhost:3000/student/login">Click to Login into Dashboard</a></p>
-
   <p><strong>Next Steps:</strong></p>
   <ul>
     <li>Log in to your student account</li>
     <li>Explore your dashboard and available resources</li>
-    <li>Stay up to date with assigned marks, tasks and more</li>
+    <li>Stay up to date with assigned marks, tasks and more.</li>
   </ul>
 
   <p>If you face any issues logging in or need support, feel free to contact the admin office.</p>
@@ -937,10 +935,6 @@ if (req.body.subjects_assigned) {
         <p>You can now log in and start accessing your dashboard to assign tasks to students, manage their records such as marks and more.</p>
 
         <p>⚠️ Since the password was shared online, we recommend changing it once you have fully explored the teacher panel to avoid any potential vulnerabilities.</p>
-
-        <p>
-            🔗 <a href="http://yourdomain.com/teacher/login" target="_blank">Click here to log in to your dashboard</a>
-        </p>
 
         <p>If you have any questions or need help, feel free to reach out to the administration team.</p>
 
@@ -1323,8 +1317,6 @@ app.patch("/student/update/:studentID",(req,res)=>{
     </ul>
 
     <p>⚠️ <strong>Note:</strong> If you have changed your password, it is not shared in this email for security reasons. You can use your new password to log in.</p>
-
-    <p>🔗 <strong>Login to Dashboard:</strong> <a href="http://localhost:3000/student/login">Click here to log in</a></p>
 
     <p>If any details seem incorrect, please update your profile again at the earliest.</p>
 
