@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 // ------------------------------ CONNECT MONGODB ------------------------------
 const connectDB = async () => {
   try {
-    await mongoose.connect(`${process.env.MONGODB_URL}/universityDB`);
+    await mongoose.connect(process.env.MONGODB_URL);
     console.log("MongoDB Atlas connected successfully!");
   } catch (error) {
     console.error("MongoDB connection failed:", error);
