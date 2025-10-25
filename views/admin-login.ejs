@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,49 +42,3 @@
   </script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin login site</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
-</head>
-<body class="bg-light p-5">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6 bg-white p-4 rounded shadow">
-        <h3 class="mb-4 text-center">Log in to your admin account</h3>
-        <form method="POST" action="/administrator/login">
-          <div class="mb-3">
-            <input type="text" class="form-control" name="username_with_num" placeholder="Username with number (e.g., admin7678xxxxxxx)" required>
-          </div>
-          <div class="mb-3">
-            <input type="password" class="form-control" name="password" placeholder="Password" required>
-          </div>
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Sign In</button>
-          </div>
-          <div class="d-grid mt-2">
-            <a href="/administrator/create" class="btn btn-outline-secondary">Create Admin Account</a>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.querySelector("form");
-      form.addEventListener("submit", () => {
-        setTimeout(() => {
-          form.reset(); // Clear inputs after submit
-        }, 10);
-      });
-    });
-  </script>
-</body>
-</html>
->>>>>>> 75130cfcb993cdb2a2db24eb4cc5d31148a63c2c
