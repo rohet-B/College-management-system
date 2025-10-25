@@ -11,15 +11,29 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ------------------------------ CONNECT MONGODB ------------------------------
+// ------------------------------ CONNECT MONGODB (Vercel-friendly) ------------------------------
+let isConnected = false; // To avoid multiple connections on serverless deploys
+
 const connectDB = async () => {
+  if (isConnected) {
+    console.log("⚡ Using existing MongoDB connection.");
+    return;
+  }
+
   try {
-    await mongoose.connect(process.env.MONGODB_URL);
-    console.log("MongoDB Atlas connected successfully!");
+    const conn = await mongoose.connect(process.env.MONGODB_URL, {
+      serverSelectionTimeoutMS: 10000, // 10 sec
+      socketTimeoutMS: 45000,
+    });
+
+    isConnected = conn.connections[0].readyState === 1;
+    console.log("✅ MongoDB Atlas connected successfully!");
   } catch (error) {
-    console.error("MongoDB connection failed:", error);
+    console.error("❌ MongoDB connection failed:", error.message);
   }
 };
+
+// Immediately try to connect once on startup
 connectDB();
 
 // ------------------------------ APP CONFIG ------------------------------
@@ -32,24 +46,33 @@ app.use(methodOverride("_method"));
 // ------------------------------ NODEMAILER ------------------------------
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  secure: true,
   host: "smtp.gmail.com",
   port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
 function sendMail(to, sub, msg) {
-  transporter.sendMail({ to, subject: sub, html: msg });
-}
-function sendFile(to, sub, msg, filePath) {
-  transporter.sendMail({
-    to,
-    subject: sub,
-    html: msg,
-    attachments: [{ filename: filePath.split("/").pop(), path: filePath }],
+  transporter.sendMail({ to, subject: sub, html: msg }, (err) => {
+    if (err) console.error("Email send error:", err.message);
   });
+}
+
+function sendFile(to, sub, msg, filePath) {
+  transporter.sendMail(
+    {
+      to,
+      subject: sub,
+      html: msg,
+      attachments: [{ filename: path.basename(filePath), path: filePath }],
+    },
+    (err) => {
+      if (err) console.error("File email send error:", err.message);
+    }
+  );
 }
 
 // ------------------------------ MONGOOSE MODELS ------------------------------
@@ -97,24 +120,19 @@ const adminSchema = new mongoose.Schema({
   username_with_num: String,
   password: String,
 });
+
 const Student = mongoose.model("Student", studentSchema);
 const Teacher = mongoose.model("Teacher", teacherSchema);
 const Admin = mongoose.model("Admin", adminSchema);
+
 // ------------------------------ ADMIN ROUTES ------------------------------
+app.get("", (req, res) => res.sendFile(path.join(__dirname, "views", "login.html")));
+app.get("/admin/login", (req, res) => res.render("admin-login.ejs"));
 
-// Admin Login Page
-app.get("", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
-});
-app.get("/admin/login", (req, res) => {
-  res.render("admin-login.ejs");
-});
-
-// Admin Login POST
 app.post("/administrator/login", async (req, res) => {
+  await connectDB();
   const { password, username_with_num } = req.body;
   const admin = await Admin.findOne({ username_with_num, password });
-
   if (admin) {
     const total_stu = await Student.countDocuments();
     const total_teacher = await Teacher.countDocuments();
@@ -129,16 +147,14 @@ app.post("/administrator/login", async (req, res) => {
   }
 });
 
-// Create new Admin
-app.get("/administrator/create", (req, res) => {
-  res.render("admin-create.ejs");
-});
+app.get("/administrator/create", (req, res) => res.render("admin-create.ejs"));
+
 app.post("/administrator/create", async (req, res) => {
+  await connectDB();
   const { First_name, Last_name, password, special_key, username_with_num } = req.body;
   if (special_key === process.env.ADMIN_SECRET_KEY) {
     const newAdmin = new Admin({ First_name, Last_name, password, username_with_num });
     await newAdmin.save();
-    // Redirect instead of render to prevent double submission
     res.redirect("/admin/login");
   } else {
     res.send("Invalid Key. Creation denied.");
@@ -606,10 +622,6 @@ app.patch('/student/update/:studentID', async (req, res) => {
 
   res.redirect(`/student/dashboard/${studentID}`);
 });
-
-// ---------- SEND: generic fallback routes (if you used them elsewhere) ----------
-
-// Marks saved view and attendance done are already rendered above in the relevant routes.
 
 // ------------------------------ START SERVER ------------------------------
 app.listen(port, () => {
