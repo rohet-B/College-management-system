@@ -489,16 +489,11 @@ app.get('/teacher/dashboard/:teacherID/marks-saved', (req, res) => {
   res.render('marks-saved.ejs', { teacherID });
 });
 
-// ---------- SEND MATERIALS (Multer + Email attachments) ----------
+// ---------- SEND MATERIALS (Serverless-friendly) ----------
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
+// On serverless platforms (like Vercel), we cannot reliably save files to disk.
+// So, we use memoryStorage to store the uploaded file in memory and send it directly via email.
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 app.get('/teacher/send/materials/:teacherID', async (req, res) => {
@@ -514,7 +509,7 @@ app.get('/teacher/send/materials/:teacherID', async (req, res) => {
 
 app.post('/teacher/send/materials/:teacherID', upload.single('material'), async (req, res) => {
   const { subject } = req.body;
-  const uploadedFile = req.file;
+  const uploadedFile = req.file; // file is in memory
   const { teacherID } = req.params;
   const teacher = await Teacher.findOne({ teacherID });
   if (!teacher) return res.send('❌ Teacher not found');
@@ -525,13 +520,22 @@ app.post('/teacher/send/materials/:teacherID', upload.single('material'), async 
   let emails_of_stu = studentsWithSubject.map(s => s.gmail);
   let emailSentCheck = 0;
 
-  for (let i = 0; i < emails_of_stu.length; i++) {
-    sendFile(
-      emails_of_stu[i],
-      "📘 Study Material Shared by Your Professor",
-      `<h2>📘 New Study Material</h2><p>Your professor <strong>${teacher.Full_name}</strong> has shared material for <strong>${subject}</strong>.</p>`,
-      uploadedFile.path
-    );
+  for (let email of emails_of_stu) {
+    transporter.sendMail({
+      to: email,
+      subject: "📘 Study Material Shared by Your Professor",
+      html: `<h2>📘 New Study Material</h2>
+             <p>Your professor <strong>${teacher.Full_name}</strong> has shared material for <strong>${subject}</strong>.</p>`,
+      attachments: [
+        {
+          filename: uploadedFile.originalname,
+          content: uploadedFile.buffer // send from memory
+        }
+      ]
+    }, (err) => {
+      if (err) console.error("Email send error:", err.message);
+    });
+
     emailSentCheck++;
   }
 
