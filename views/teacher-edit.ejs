@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,3 +137,143 @@
 </script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Teacher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">Edit Teacher Details</h2>
+    <form action="/teacher/dashboard/edit/<%= editTeacher.teacherID %>?_method=PATCH" method="POST">
+        
+        <!-- Full Name, Username, Gender -->
+        <div class="row mb-3">
+            <div class="col">
+                <label for="Full_name" class="form-label">Full Name</label>
+                <input type="text" name="Full_name" class="form-control" value="<%= editTeacher.Full_name %>" required>
+            </div>
+            <div class="col">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" value="<%= editTeacher.username %>" required>
+            </div>
+            <div class="col">
+                <label for="gender" class="form-label">Gender</label>
+                <select name="gender" class="form-select" required>
+                    <option value="Male" <%= editTeacher.gender === "Male" ? "selected" : "" %>>Male</option>
+                    <option value="Female" <%= editTeacher.gender === "Female" ? "selected" : "" %>>Female</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Teacher ID, Gmail, Password, Department -->
+        <div class="row mb-3">
+            <div class="col">
+                <label for="teacherID" class="form-label">Teacher ID</label>
+                <input type="text" name="teacherID" class="form-control" value="<%= editTeacher.teacherID %>" readonly>
+            </div>
+            <div class="col">
+                <label for="gmail" class="form-label">Gmail</label>
+                <input type="email" name="gmail" class="form-control" value="<%= editTeacher.gmail %>" required>
+            </div>
+            <div class="col">
+                <label for="password" class="form-label">Password</label>
+                <input type="text" name="password" class="form-control" value="<%= editTeacher.password %>" required>
+            </div>
+            <div class="col">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" name="department" class="form-control" value="<%= editTeacher.department %>" required>
+            </div>
+        </div>
+
+        <!-- Experience, DOB, Joining Date -->
+        <div class="row mb-3">
+            <div class="col">
+                <label for="experience" class="form-label">Years of Experience</label>
+                <input type="number" name="experience" class="form-control" value="<%= editTeacher.years_of_experience %>" required>
+            </div>
+            <div class="col">
+                <label for="dob" class="form-label">Date of Birth</label>
+                <input type="date" name="dob" class="form-control" value="<%= editTeacher.dob %>" required>
+            </div>
+            <div class="col">
+                <label for="joining_date" class="form-label">Joining Date</label>
+                <input type="date" name="joining_date" class="form-control" value="<%= editTeacher.joining_date %>" required>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select name="status" class="form-select" required>
+                <option value="Active" <%= editTeacher.status === "Active" ? "selected" : "" %>>Active</option>
+                <option value="Inactive" <%= editTeacher.status === "Inactive" ? "selected" : "" %>>Inactive</option>
+            </select>
+        </div>
+
+        <!-- Subjects Assigned -->
+        <div class="mb-3">
+            <label class="form-label">Subjects Assigned</label>
+            <div id="subjects-container">
+                <% editTeacher.subjects_assigned.forEach((subject, index) => { %>
+                    <div class="row mb-2 subject-row">
+  <div class="col">
+    <input type="text" name="subjects_assigned[<%= index %>][name]" class="form-control" value="<%= subject.name %>" placeholder="Subject Name" oninput="this.value = this.value.toUpperCase()" >
+  </div>
+  <div class="col">
+    <input type="text" name="subjects_assigned[<%= index %>][course]" class="form-control" value="<%= subject.course %>" placeholder="Course" oninput="this.value = this.value.toUpperCase()">
+  </div>
+  <div class="col">
+    <input type="text" name="subjects_assigned[<%= index %>][semester]" class="form-control" value="<%= subject.semester %>" placeholder="Semester">
+  </div>
+  <div class="col-2 d-flex align-items-end">
+    <button type="button" class="btn btn-danger w-100" onclick="removeSubject(this)">Delete</button>
+  </div>
+</div>
+
+                <% }) %>
+            </div>
+              <button type="button" class="btn btn-success btn-sm mt-2" onclick="addSubject()">Add Subject</button>
+        </div>
+
+        <!-- Submit Buttons -->
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="/teacher/dashboard/<%= editTeacher.teacherID %>" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+
+<!-- JavaScript to remove subject row -->
+<script>
+    function removeSubject(button) {
+        const row = button.closest('.subject-row');
+        row.remove();
+    }
+     function addSubject() {
+    const container = document.getElementById("subjects-container");
+    const index = container.querySelectorAll(".subject-row").length;
+
+    const newRow = document.createElement("div");
+    newRow.className = "row mb-2 subject-row";
+    newRow.innerHTML = `
+      <div class="col">
+        <input type="text" name="subjects_assigned[${index}][name]" class="form-control" placeholder="Subject Name oninput="this.value = this.value.toUpperCase()">
+      </div>
+      <div class="col">
+        <input type="text" name="subjects_assigned[${index}][course]" class="form-control" placeholder="Course" oninput="this.value = this.value.toUpperCase()">
+      </div>
+      <div class="col">
+        <input type="text" name="subjects_assigned[${index}][semester]" class="form-control" placeholder="Semester">
+      </div>
+      <div class="col-2 d-flex align-items-end">
+        <button type="button" class="btn btn-danger w-100" onclick="removeSubject(this)">Delete</button>
+      </div>
+    `;
+    container.appendChild(newRow);
+  }
+</script>
+</body>
+</html>
+>>>>>>> 75130cfcb993cdb2a2db24eb4cc5d31148a63c2c

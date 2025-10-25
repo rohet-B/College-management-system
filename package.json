@@ -9,11 +9,18 @@
   "author": "Rohit Biswash",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "method-override": "^3.0.0",
     "mongoose": "^8.19.2",
+=======
+    "dotenv": "^17.2.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "method-override": "^3.0.0",
+>>>>>>> 75130cfcb993cdb2a2db24eb4cc5d31148a63c2c
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5"
   }
