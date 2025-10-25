@@ -1,0 +1,8 @@
+# Ignore node_modules folder (it's huge and not needed in repo)
+node_modules/
+
+# Ignore environment variables (credentials, secrets)
+.env
+
+# Ignore uploaded files
+uploads/

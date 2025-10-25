@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/logout">🎓 University System</a>
+    <div class="ms-auto">
+      <a href="/logout" class="btn btn-outline-danger">Logout</a>
+    </div>
+  </div>
+</nav>
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Welcome, Admin <%= admin_first_name %> <%= admin_last_name %>!</h2>
+
+    <div class="row justify-content-center">
+      <!-- Students Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body text-center">
+            <h4 class="card-title">Students</h4>
+            <p class="card-text fs-3">Total: <%= total_stu %></p>
+            <a href="/admin/students" class="btn btn-light">Manage Students</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teachers Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card text-white bg-danger h-100">
+          <div class="card-body text-center">
+            <h4 class="card-title">Teachers</h4>
+            <p class="card-text fs-3">Total: <%= total_teacher %></p>
+            <a href="/admin/teachers" class="btn btn-light">Manage Teachers</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
