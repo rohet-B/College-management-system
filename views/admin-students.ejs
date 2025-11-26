@@ -7,9 +7,15 @@
 </head>
 <body>
 <div class="container mt-5">
+
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>All Students</h2>
-        <a href="/admin/students/new" class="btn btn-primary">+ Add New Student</a>
+        <div>
+            <!-- Added button -->
+            <a href="/administrator/login" class="btn btn-secondary me-2">← Back to Dashboard</a>
+
+            <a href="/admin/students/new" class="btn btn-primary">+ Add New Student</a>
+        </div>
     </div>
 
     <p class="text-muted">Total Students: <strong><%= students.length %></strong></p>
@@ -19,11 +25,11 @@
         <div class="col-md-6">
             <label for="courseFilter" class="form-label">Filter by Course:</label>
             <select name="course" id="courseFilter" class="form-select" onchange="this.form.submit()">
-                <!-- In HTML, the selected keyword in a <option> tag tells the browser: -->
-                <!-- "This is the currently selected option in the dropdown." -->
                 <option value="All" <%= selectedCourse === "All" ? "selected" : "" %>>All Courses</option>
                 <% courses.forEach(course => { %>
-                    <option value="<%= course %>" <%= selectedCourse === course ? "selected" : "" %>><%= course %></option>
+                    <option value="<%= course %>" <%= selectedCourse === course ? "selected" : "" %>>
+                        <%= course %>
+                    </option>
                 <% }) %>
             </select>
         </div>
@@ -32,7 +38,9 @@
             <select name="semester" id="semesterFilter" class="form-select" onchange="this.form.submit()">
                 <option value="All" <%= selectedSemester === "All" ? "selected" : "" %>>All Semesters</option>
                 <% semesters.forEach(sem => { %>
-                    <option value="<%= sem %>" <%= selectedSemester === sem ? "selected" : "" %>><%= sem %></option>
+                    <option value="<%= sem %>" <%= selectedSemester === sem ? "selected" : "" %>>
+                        <%= sem %>
+                    </option>
                 <% }) %>
             </select>
         </div>
@@ -68,7 +76,8 @@
                 <td><%= student.dob %></td>
                 <td>
                     <form action="/admin/students/<%= student.studentID %>?_method=DELETE" method="POST" class="d-inline">
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?')">DEL</button>
+                        <button class="btn btn-sm btn-danger"
+                                onclick="return confirm('Are you sure you want to delete this student?')">DEL</button>
                     </form>
                 </td>
             </tr>
