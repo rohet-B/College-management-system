@@ -9,7 +9,10 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>All Teachers</h2>
-        <a href="/admin/teachers/new" class="btn btn-primary">+ Add New Teacher</a>
+        <div>
+            <a href="/administrator/login" class="btn btn-secondary me-2">← Back to Dashboard</a>
+            <a href="/admin/teachers/new" class="btn btn-primary">+ Add New Teacher</a>
+        </div>
     </div>
 
     <p class="text-muted">Total Teachers: <strong><%= teachers.length %></strong></p>
