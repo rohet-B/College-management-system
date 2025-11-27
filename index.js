@@ -129,9 +129,6 @@ const Admin = mongoose.model("Admin", adminSchema);
 app.get("", (req, res) => res.sendFile(path.join(__dirname, "views", "login.html")));
 app.get("/admin/login", (req, res) => res.render("admin-login.ejs"));
 
-app.get("/administrator/login", (req, res) => {
-  res.render("admin-dash.ejs");  // your login page file
-});
 app.post("/administrator/login", async (req, res) => {
   await connectDB();
   const { password, username_with_num } = req.body;
